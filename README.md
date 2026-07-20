@@ -1,84 +1,151 @@
-# go-api-kit
+<div align="center">
 
-A minimal, production-ready Go project template.
+# 🚀 Go API Kit
 
-**Stack:** `net/http` · `log/slog` · `pgx/v5` · `goose` · `sqlc`
+**A lightweight, production-ready Go REST API starter template using Package-by-Feature Clean Architecture.**
 
-## Getting Started
+[![Go Version](https://img.shields.io/badge/Go-1.23%2B-00ADD8?style=flat&logo=go)](https://golang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI Status](https://github.com/AhmetTalhaBicer/go-api-kit/workflows/CI/badge.svg)](https://github.com/AhmetTalhaBicer/go-api-kit/actions)
+
+Zero Third-Party Web Framework Lock-In · Production Hardened · Type-Safe SQL
+
+</div>
+
+---
+
+## ✨ Features
+
+- ⚡ **Zero Web Framework Lock-In** — Built on Go standard library (`net/http` with Go 1.22+ ServeMux routing).
+- 🏗️ **Package-by-Feature Architecture** — Clean, modular domain organization (`internal/domain1`, `internal/domain2`) with high cohesion and low coupling.
+- 🗄️ **Type-Safe Database Layer** — `pgx/v5` connection pool, `sqlc` compile-time type-safe queries, and `goose` embedded migrations.
+- 🛡️ **Production-Hardened Middleware** — `X-Request-ID` correlation tracing, `Context Timeout`, `Panic Recovery`, `Structured JSON Logging` (`log/slog`), and `CORS`.
+- 🎯 **Proper Error Handling** — Sentinel errors (`ErrNotFound`), `errors.Is` error unwrapping, and distinct 404 vs 500 status responses.
+- 🛑 **Graceful Shutdown** — Handles `SIGINT` and `SIGTERM` signals for zero-downtime deployments.
+- 🔄 **Hot Reloading** — Integrated with `Air` (`make watch`) for seamless local development.
+- 🐳 **Docker & CI/CD Ready** — Multi-stage `Dockerfile`, `docker-compose.yml`, and GitHub Actions pipelines (CI & Multi-arch Release).
+
+---
+
+## 🚀 Quick Start
+
+### 1. Create a Repository from This Template
+
+Click the **"Use this template"** button on GitHub, or clone your new repository:
 
 ```bash
-# 1. Use this template on GitHub, then clone your new repo
-
-# 2. Update the module path
-go mod edit -module github.com/YOUR_USERNAME/YOUR_PROJECT
-find . -type f -name "*.go" | xargs sed -i \
-  's|github.com/username/go-api-kit|github.com/YOUR_USERNAME/YOUR_PROJECT|g'
-
-# 3. Set up environment
-cp .env.example .env
-
-# 4. Install tools
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-go install github.com/pressly/goose/v3/cmd/goose@latest
-
-# 5. Run
-make migrate-up
-make sqlc
-make run
+git clone https://github.com/YOUR_USERNAME/YOUR_PROJECT.git
+cd YOUR_PROJECT
 ```
 
-## Structure
+### 2. Update Module Path
+
+```bash
+# Update module path in go.mod
+go mod edit -module github.com/YOUR_USERNAME/YOUR_PROJECT
+
+# Update all import paths across the project
+find . -type f -name "*.go" | xargs sed -i \
+  's|github.com/username/go-api-kit|github.com/YOUR_USERNAME/YOUR_PROJECT|g'
+```
+
+### 3. Set Up Environment & Tools
+
+```bash
+cp .env.example .env
+
+# Install CLI tools for database development
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+go install github.com/pressly/goose/v3/cmd/goose@latest
+go install github.com/air-verse/air@latest
+```
+
+### 4. Run Live Development Server
+
+```bash
+make watch    # Starts server with Air hot-reloading (http://localhost:8080)
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 .
-├── cmd/api/                # API server entry point (main.go)
+├── cmd/
+│   └── api/                # Application entry point (main.go)
 ├── internal/
-│   ├── config/             # Environment-based configuration
-│   ├── database/           # pgxpool connection & goose embedded migrations
+│   ├── config/             # Typed environment configuration
+│   ├── database/           # pgxpool connection & embedded goose migrations
 │   │   └── migrations/     # SQL migration files (.sql)
-│   ├── domain1/            # Domain 1: model, repository, service, handler
-│   ├── domain2/            # Domain 2: model, repository, service, handler
+│   ├── domain1/            # Domain 1: model, repository interface, service, handler
+│   ├── domain2/            # Domain 2: model, repository interface, service, handler
 │   ├── health/             # Health check endpoints (/health, /healthz)
-│   ├── logger/             # log/slog wrapper (JSON/text)
+│   ├── logger/             # log/slog structured logger wrapper
 │   ├── middleware/         # RequestID, Timeout, Logger, Recover, CORS
-│   ├── response/           # Standard JSON response helpers
-│   └── validator/          # Input validation without dependencies
+│   ├── response/           # Standardized JSON response helpers
+│   └── validator/          # Dependency-free fluent input validator
 ├── sqlc/
 │   ├── queries/            # SQL query files (input for sqlc)
-│   └── gen/                # Generated Go code from sqlc
+│   └── gen/                # Type-safe Go code generated by sqlc
 ├── test/
-│   └── integration/        # Integration/API tests
-├── api/                    # OpenAPI 3.0 spec
-├── deployments/            # Dockerfile & docker-compose
+│   └── integration/        # Integration and API tests
+├── api/                    # OpenAPI 3.0 specification (openapi.yaml)
+├── deployments/            # Dockerfile & docker-compose.yml
 ├── docs/                   # Architecture documentation
-├── scripts/                # Build & migration scripts
-└── .github/workflows/      # CI/CD & Release pipelines
+├── scripts/                # Build & migration helper scripts
+└── .github/workflows/      # GitHub Actions CI & Release workflows
 ```
 
-## Commands
+---
+
+## 🛠️ Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `make run` | Start the server |
-| `make watch` | Start live-reloading dev server (Air) |
-| `make build` | Compile binary |
-| `make test` | Run all tests |
+| `make run` | Run application directly with `go run` |
+| `make watch` | Start live-reloading dev server using `Air` |
+| `make build` | Compile binary to `./build/go-api-kit` |
+| `make test` | Run all unit & integration tests with race detector |
 | `make test-integration` | Run integration tests only |
-| `make sqlc` | Generate code from SQL |
-| `make migrate-up` | Apply migrations |
-| `make migrate-down` | Roll back last migration |
-| `make migrate-create NAME=x` | New migration file |
-| `make lint` | Run golangci-lint |
-| `make docker-up` | Start with Docker Compose |
+| `make sqlc` | Regenerate Go code from `sqlc/queries/` |
+| `make migrate-up` | Apply pending database migrations |
+| `make migrate-down` | Roll back last database migration |
+| `make migrate-status` | Show current migration status |
+| `make migrate-create NAME=x` | Create a new SQL migration file |
+| `make lint` | Run `golangci-lint` |
+| `make docker-up` | Spin up services via Docker Compose |
 
-## Adapting to Your Project
+---
 
-1. Rename `internal/domain1/` and `internal/domain2/` to your business concepts.
-2. Update entity fields in each `model.go`.
-3. Implement the `Repository` interface (wire sqlc `*Queries` inside).
-4. Uncomment the DB connect and migrate blocks in `cmd/api/main.go`.
-5. Update `internal/database/migrations/` and `sqlc/queries/` for your schema.
+## 🗄️ Database & Migrations Workflow
 
-## License
+### SQL Migrations (`goose`)
+Migration files live in `internal/database/migrations/` and are compiled into the binary via `//go:embed`.
 
-MIT
+```bash
+make migrate-create NAME=create_users_table   # Create new migration file
+make migrate-up                              # Apply migrations
+make migrate-down                            # Roll back migration
+```
+
+### Type-Safe Queries (`sqlc`)
+1. Write raw SQL queries in `sqlc/queries/<domain>.sql`.
+2. Run `make sqlc` to generate type-safe Go code in `sqlc/gen/`.
+3. Inject the generated `*sqlcdb.Queries` into your domain repository implementations.
+
+---
+
+## 🔄 Adapting to Your Business Domains
+
+1. **Rename Domains**: Rename `internal/domain1/` and `internal/domain2/` to match your business domains (e.g. `user`, `product`, `order`).
+2. **Define Entities**: Edit `model.go` in each domain package.
+3. **Write SQL Queries**: Update `internal/database/migrations/` and `sqlc/queries/` for your schema, then run `make sqlc`.
+4. **Implement Repository**: Implement the `Repository` interface using `sqlc/gen`.
+5. **Wire Dependencies**: Wire repository, service, and handler in `cmd/api/main.go`.
+
+---
+
+## 📜 License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
