@@ -1,0 +1,33 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+
+    # SQL query files — input for sqlc
+    queries: "sqlc/queries/"
+
+    # Schema source — migration files from internal/database/migrations/
+    schema: "internal/database/migrations/"
+
+    gen:
+      go:
+        # Package name for the generated code
+        package: "sqlcdb"
+
+        # Output directory for generated Go code
+        out: "sqlc/gen"
+
+        # Use pgx/v5 driver package
+        sql_package: "pgx/v5"
+
+        # Emit json tags on generated structs
+        emit_json_tags: true
+
+        # Emit interface for the Querier, useful for mocking
+        emit_interface: true
+
+        # Map pgx/v5 pgtype.Timestamptz -> time.Time
+        overrides:
+          - db_type: "pg_catalog.timestamptz"
+            go_type: "time.Time"
+          - db_type: "pg_catalog.int8"
+            go_type: "int64"

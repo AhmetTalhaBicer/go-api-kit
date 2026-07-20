@@ -1,0 +1,37 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/build/
+/bin/
+
+# Go test binary
+*.test
+
+# Go coverage output
+*.out
+coverage.html
+
+# Dependency directories
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+
+# Air live reload
+tmp/
+build-errors.log
+
+# OS
+Thumbs.db
