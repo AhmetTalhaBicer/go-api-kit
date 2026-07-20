@@ -3,6 +3,9 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
+# Enable automatic toolchain downloads if go.mod requires a newer Go version
+ENV GOTOOLCHAIN=auto
+
 # Pre-copy dependencies for layer caching
 COPY go.mod go.sum* ./
 RUN go mod download
