@@ -3,23 +3,14 @@ package database
 import (
 	"context"
 	"database/sql"
-	"embed"
 	"fmt"
+	"os"
 
-	_ "github.com/jackc/pgx/v5/stdlib" // pgx driver for database/sql
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 )
 
-// embedMigrations embeds all SQL migration files at compile time.
-// Goose will apply them in order when Migrate() is called.
-//
-//go:embed migrations/*.sql
-var embedMigrations embed.FS
-
-// Migrate applies all pending database migrations using goose.
-// It reads SQL files from the embedded migrations/ directory.
-//
-// Call this once at application startup, before serving traffic.
+// Migrate applies all pending database migrations using goose from the root ./migrations directory.
 func Migrate(ctx context.Context, dsn string) error {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
@@ -27,7 +18,8 @@ func Migrate(ctx context.Context, dsn string) error {
 	}
 	defer db.Close()
 
-	goose.SetBaseFS(embedMigrations)
+	// Read migration SQL files directly from root ./migrations folder
+	goose.SetBaseFS(os.DirFS("."))
 
 	if err := goose.SetDialect("postgres"); err != nil {
 		return fmt.Errorf("database: migrate: set dialect: %w", err)

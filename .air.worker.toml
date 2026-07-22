@@ -1,19 +1,19 @@
-# Air configuration for fast live reload (cmd/api)
+# Air configuration for fast live reload (cmd/worker)
 root = "."
 testdata_dir = "testdata"
 tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./tmp/main.exe"
-  cmd = "go build -o ./tmp/main.exe ./cmd/api"
+  bin = "./tmp/worker.exe"
+  cmd = "go build -o ./tmp/worker.exe ./cmd/worker"
   delay = 300
   exclude_dir = ["tmp", "vendor", "migrations", "queries", ".git", ".idea", ".vscode", "scripts"]
   exclude_file = []
   exclude_regex = ["_test\\.go$"]
   exclude_unchanged = true
   follow_symlink = false
-  full_bin = "./tmp/main.exe"
+  full_bin = "./tmp/worker.exe"
   include_dir = []
   include_ext = ["go", "yaml", "yml", "json", "env"]
   include_file = []

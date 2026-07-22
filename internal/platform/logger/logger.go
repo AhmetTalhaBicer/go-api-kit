@@ -5,9 +5,6 @@ import (
 	"os"
 )
 
-// New creates a configured slog.Logger for the given level and format.
-// format "text" produces human-readable output; anything else produces JSON.
-// Source file and line are included automatically when level is "debug".
 func New(level, format string) *slog.Logger {
 	var lvl slog.Level
 	switch level {

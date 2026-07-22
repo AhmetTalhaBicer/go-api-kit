@@ -1,152 +1,78 @@
-openapi: "3.0.3"
+openapi: 3.0.3
 info:
-  title: Go Starter Template API
-  description: |
-    REST API built with Go standard library (net/http).
-    Replace this description with your own project details.
-  version: "1.0.0"
+  title: Go API Kit
+  description: Reusable Go REST API starter template documentation.
+  version: 2.0.0
   contact:
-    name: API Support
-    url: https://github.com/username/go-api-kit
+    name: Go API Kit
+    email: team@your-domain.com
 
 servers:
-  - url: http://localhost:8080
-    description: Local development server
-
-tags:
-  - name: health
-    description: Server health checks
-  - name: examples
-    description: Example CRUD operations
+  - url: http://localhost:8080/v1
+    description: Local Development Server
+  - url: https://api.your-domain.com/v1
+    description: Production Server
 
 paths:
   /health:
     get:
-      tags: [health]
-      summary: Health check
-      description: Returns the current server health status.
-      operationId: getHealth
+      summary: Health Check Endpoint
+      description: Checks the status of the server and database connectivity.
+      tags:
+        - Health
       responses:
         "200":
-          description: Server is healthy
+          description: The server is running normally.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
-              example:
-                success: true
-                data:
-                  status: ok
+                $ref: "#/components/schemas/BaseResponse"
 
-  /api/v1/examples:
-    get:
-      tags: [examples]
-      summary: List all examples
-      operationId: listExamples
-      responses:
-        "200":
-          description: A list of example records
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/SuccessResponse"
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: "#/components/schemas/Example"
-        "500":
-          $ref: "#/components/responses/InternalError"
-
+  /auth/otp/send:
     post:
-      tags: [examples]
-      summary: Create a new example
-      operationId: createExample
+      summary: Send OTP Code
+      description: Sends an OTP code to the user's phone number via SMS.
+      tags:
+        - Auth
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateExampleRequest"
-      responses:
-        "201":
-          description: Example created successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "500":
-          $ref: "#/components/responses/InternalError"
-
-  /api/v1/examples/{id}:
-    get:
-      tags: [examples]
-      summary: Get an example by ID
-      operationId: getExampleById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+              type: object
+              required:
+                - phone_number
+              properties:
+                phone_number:
+                  type: string
+                  example: "+905551112233"
       responses:
         "200":
-          description: The requested example record
+          description: OTP sent successfully.
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/SuccessResponse"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/Example"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "500":
-          $ref: "#/components/responses/InternalError"
+                $ref: "#/components/schemas/BaseResponse"
+        "400":
+          description: Invalid phone number.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
-    Example:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        name:
-          type: string
-          example: "My Example"
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
-    CreateExampleRequest:
-      type: object
-      required: [name]
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-          example: "New Example"
-
-    SuccessResponse:
+    BaseResponse:
       type: object
       properties:
         success:
           type: boolean
           example: true
+        message:
+          type: string
+          example: "Operation successful"
         data:
+          type: object
           nullable: true
 
     ErrorResponse:
@@ -156,25 +82,11 @@ components:
           type: boolean
           example: false
         error:
-          type: string
-          example: "resource not found"
-
-  responses:
-    BadRequest:
-      description: Invalid request payload
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-    InternalError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
+          type: object
+          properties:
+            code:
+              type: string
+              example: "INVALID_INPUT"
+            message:
+              type: string
+              example: "Invalid request parameter"
