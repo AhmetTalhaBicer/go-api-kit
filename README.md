@@ -6,7 +6,6 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.23%2B-00ADD8?style=flat&logo=go)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI Status](https://github.com/username/go-api-kit/workflows/CI/badge.svg)](https://github.com/username/go-api-kit/actions)
 
 Zero Third-Party Web Framework Lock-In · Production Hardened · Type-Safe SQL
 
